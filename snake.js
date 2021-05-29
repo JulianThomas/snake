@@ -1,49 +1,69 @@
 canvas = document.getElementById("canvas");
-canvas.width = 800;
-canvas.height = 400;
+
+//change canvas height and width here to change the game area
+canvas.width = window.innerWidth * 0.7;
+canvas.height = window.innerHeight * 0.7;
 let ctx = canvas.getContext("2d");
 let cellSize = 20;
-let rows = canvas.width / cellSize,
-  cols = canvas.height / cellSize;
-let xpos = rows / cellSize,
-  ypos = cols / cellSize;
+let rows = Math.floor(canvas.width / cellSize),
+  cols = Math.floor(canvas.height / cellSize);
+let xpos = Math.floor(rows / cellSize),
+  ypos = Math.floor(cols / cellSize);
 
 let xvel = (yvel = 0);
-let xapl = (yapl = 15);
+let xapl = Math.floor(Math.random() * rows),
+  yapl = Math.floor(Math.random() * cols); //initial apple position
 let body = [];
 let length = 1;
+let interv;
+let paused = false,
+  started = false;
+// window.onblur = () => clearInterval(interv);
+// window.onfocus = () => setInterval(update, 1000 / 10);
 
 window.onload = function () {
   addEventListener("keydown", keyPressed);
-  setInterval(update, 1000 / 10);
+  interv = setInterval(update, 1000 / 10); //increase if you need higher speed
 };
 
 keyPressed = (e) => {
   switch (e.keyCode) {
     case 37:
-      if ((xvel != 1 && yvel != 0) || xvel + yvel === 0) {
+      if ((xvel != 1 && yvel != 0) || !started) {
         xvel = -1;
         yvel = 0;
+        started = true;
       }
       break;
 
     case 38:
-      if ((xvel != 0 && yvel != 1) || xvel + yvel === 0) {
+      if ((xvel != 0 && yvel != 1) || !started) {
         xvel = -0;
         yvel = -1;
+        started = true;
       }
       break;
     case 39:
-      if ((xvel != -1 && yvel != 0) || xvel + yvel === 0) {
+      if ((xvel != -1 && yvel != 0) || !started) {
         xvel = +1;
         yvel = 0;
+        started = true;
       }
       break;
     case 40:
-      if ((xvel != -0 && yvel != -1) || xvel + yvel === 0) {
+      if ((xvel != -0 && yvel != -1) || !started) {
         xvel = 0;
         yvel = +1;
+        started = true;
       }
+      break;
+    case 80:
+      if (paused) {
+        interv = setInterval(update, 1000 / 10);
+      } else {
+        clearInterval(interv);
+      }
+      paused = !paused;
       break;
   }
 };
@@ -72,6 +92,9 @@ function update() {
     //death
     if (body[index].x == xpos && body[index].y == ypos) {
       length = 1;
+      xvel = yvel = 0;
+      setTimeout(() => (started = false), 2000);
+      document.querySelector(".score-value").innerHTML = `${length}`;
     }
   }
   body.push({ x: xpos, y: ypos });
@@ -79,10 +102,12 @@ function update() {
   while (body.length > length) {
     body.shift();
   }
+
   if (xapl == xpos && yapl == ypos) {
     length++;
     xapl = Math.floor(Math.random() * rows);
     yapl = Math.floor(Math.random() * cols);
+    document.querySelector(".score-value").innerHTML = `${length}`;
   }
   ctx.fillStyle = "red";
   //   ctx.fillRect(

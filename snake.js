@@ -85,10 +85,21 @@ function update() {
     yapl = Math.floor(Math.random() * cols);
   }
   ctx.fillStyle = "red";
-  ctx.fillRect(
-    xapl * cellSize + 5,
-    yapl * cellSize + 5,
-    cellSize - 10,
-    cellSize - 10
+  //   ctx.fillRect(
+  //     xapl * cellSize + 5,
+  //     yapl * cellSize + 5,
+  //     cellSize - 10,
+  //     cellSize - 10
+  //   );
+
+  //creates circles instead of squares
+  ctx.beginPath();
+  ctx.arc(
+    xapl * cellSize + cellSize / 2,
+    yapl * cellSize + cellSize / 2,
+    cellSize * 0.3,
+    0,
+    2 * Math.PI
   );
+  ctx.fill();
 }

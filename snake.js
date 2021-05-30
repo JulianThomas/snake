@@ -81,7 +81,6 @@ function update() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "cyan";
-
   for (let index = 0; index < body.length; index++) {
     ctx.fillRect(
       body[index].x * cellSize,
@@ -90,16 +89,15 @@ function update() {
       cellSize - 1
     );
     //death
-    if (body[index].x == xpos && body[index].y == ypos) {
-      length = 1;
+    if (body[index].x == xpos && body[index].y == ypos && started) {
       xvel = yvel = 0;
-      setTimeout(() => (started = false), 2000);
-      document.querySelector(".score-value").innerHTML = `${length}`;
+      death();
+      ctx.beginPath();
     }
   }
-  body.push({ x: xpos, y: ypos });
 
-  while (body.length > length) {
+  body.push({ x: xpos, y: ypos });
+  while (body.length > length && started) {
     body.shift();
   }
 
@@ -118,13 +116,25 @@ function update() {
   //   );
 
   //creates circles instead of squares
-  ctx.beginPath();
+
   ctx.arc(
     xapl * cellSize + cellSize / 2,
     yapl * cellSize + cellSize / 2,
-    cellSize * 0.3,
+    cellSize * 0.6,
     0,
     2 * Math.PI
   );
   ctx.fill();
+  ctx.closePath();
+}
+
+function death() {
+  started = false;
+  while (body.lenth > 1) {
+    body.pop();
+  }
+  setTimeout(() => {
+    length = 1;
+    document.querySelector(".score-value").innerHTML = `${length}`;
+  }, 3000);
 }

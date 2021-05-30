@@ -1,10 +1,12 @@
 canvas = document.getElementById("canvas");
-
-//change canvas height and width here to change the game area
-canvas.width = window.innerWidth * 0.7;
-canvas.height = window.innerHeight * 0.7;
-let ctx = canvas.getContext("2d");
 let cellSize = 20;
+//change canvas height and width here to change the game area
+//added floor and divide and multiply by cellsize
+//to trim off any extra pixels on the
+canvas.width = Math.floor((window.innerWidth / cellSize) * 0.7) * cellSize;
+canvas.height = Math.floor((window.innerHeight / cellSize) * 0.7) * cellSize;
+let ctx = canvas.getContext("2d");
+
 let rows = Math.floor(canvas.width / cellSize),
   cols = Math.floor(canvas.height / cellSize);
 let xpos = Math.floor(rows / cellSize),
@@ -23,7 +25,7 @@ let paused = false,
 
 window.onload = function () {
   addEventListener("keydown", keyPressed);
-  interv = setInterval(update, 1000 / 10); //increase if you need higher speed
+  interv = setInterval(update, 1000 / 15); //increase if you need higher speed
 };
 
 keyPressed = (e) => {
@@ -86,8 +88,8 @@ function update() {
     ctx.fillRect(
       body[index].x * cellSize,
       body[index].y * cellSize,
-      cellSize - 1,
-      cellSize - 1
+      cellSize,
+      cellSize
     );
     //death
     if (body[index].x == xpos && body[index].y == ypos) {
@@ -108,6 +110,13 @@ function update() {
     xapl = Math.floor(Math.random() * rows);
     yapl = Math.floor(Math.random() * cols);
     document.querySelector(".score-value").innerHTML = `${length}`;
+  }
+  //makes the apple not spawn on snake
+  for (let i = 0; i < body.length; i++) {
+    if (body[i].x == xapl && body[i].y == yapl) {
+      xapl = Math.floor(Math.random() * rows);
+      yapl = Math.floor(Math.random() * cols);
+    }
   }
   ctx.fillStyle = "red";
   //   ctx.fillRect(

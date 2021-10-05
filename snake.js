@@ -1,71 +1,71 @@
 canvas = document.getElementById("canvas");
 let cellSize = 20;
+
 //change canvas height and width here to change the game area
 //added floor and divide and multiply by cellsize
-//to trim off any extra pixels on the
+//to trim off any extra pixels on the canvas
 canvas.width = Math.floor((window.innerWidth / cellSize) * 0.7) * cellSize;
 canvas.height = Math.floor((window.innerHeight / cellSize) * 0.7) * cellSize;
 let ctx = canvas.getContext("2d");
 
 let rows = Math.floor(canvas.width / cellSize),
-  cols = Math.floor(canvas.height / cellSize);
-let xpos = Math.floor(rows / cellSize),
-  ypos = Math.floor(cols / cellSize);
-
-let xvel = (yvel = 0);
-let xapl = Math.floor(Math.random() * rows),
-  yapl = Math.floor(Math.random() * cols); //initial apple position
+    cols = Math.floor(canvas.height / cellSize);
+    //position of the snake when spawned
+let xpos = Math.floor(Math.random()*rows),
+    ypos = Math.floor(Math.random() * rows);
+let xvel = (yvel = 0);  // initial velocity
 let body = [];
 let length = 1;
-let interv;
-let paused = false,
-  started = false;
-// window.onblur = () => clearInterval(interv);
-// window.onfocus = () => setInterval(update, 1000 / 10);
+    //initial apple position
+let xapl = Math.floor(Math.random() * rows),
+    yapl = Math.floor(Math.random() * cols); 
+
+let interv,
+    updateInterval = 1000 / 18; //decrease if you need higher speed
+let isPaused = false,
+    isStarted = false;
+  
+window.onblur = () => { if (isStarted) pause();};
+ 
 
 window.onload = function () {
   addEventListener("keydown", keyPressed);
-  interv = setInterval(update, 1000 / 15); //increase if you need higher speed
+  interv = setInterval(update, updateInterval); 
 };
 
 keyPressed = (e) => {
   switch (e.keyCode) {
     case 37:
-      if ((xvel != 1 && yvel != 0) || !started) {
+      if ((xvel != 1 && yvel != 0) || !isStarted) {
         xvel = -1;
         yvel = 0;
-        started = true;
+        isStarted = true;
       }
       break;
 
     case 38:
-      if ((xvel != 0 && yvel != 1) || !started) {
+      if ((xvel != 0 && yvel != 1) || !isStarted) {
         xvel = -0;
         yvel = -1;
-        started = true;
+        isStarted = true;
       }
       break;
     case 39:
-      if ((xvel != -1 && yvel != 0) || !started) {
+      if ((xvel != -1 && yvel != 0) || !isStarted) {
         xvel = +1;
         yvel = 0;
-        started = true;
+        isStarted = true;
       }
       break;
     case 40:
-      if ((xvel != -0 && yvel != -1) || !started) {
+      if ((xvel != -0 && yvel != -1) || !isStarted) {
         xvel = 0;
         yvel = +1;
-        started = true;
+        isStarted = true;
       }
       break;
     case 80:
-      if (paused) {
-        interv = setInterval(update, 1000 / 10);
-      } else {
-        clearInterval(interv);
-      }
-      paused = !paused;
+          pause();
       break;
   }
 };
@@ -95,7 +95,7 @@ function update() {
     if (body[index].x == xpos && body[index].y == ypos) {
       length = 1;
       xvel = yvel = 0;
-      setTimeout(() => (started = false), 2000);
+      setTimeout(() => (isStarted = false), 2000);
       document.querySelector(".score-value").innerHTML = `${length}`;
     }
   }
@@ -137,3 +137,16 @@ function update() {
   );
   ctx.fill();
 }
+
+function pause() {
+    
+    if (isPaused) {
+        interv = setInterval(update, updateInterval);
+        document.querySelector(".paused").innerHTML = 'Press P to pause';
+
+    } else {
+        clearInterval(interv);
+        document.querySelector(".paused").innerHTML = 'Game paused. Press P to resume';
+    }
+    isPaused = !isPaused;
+} 
